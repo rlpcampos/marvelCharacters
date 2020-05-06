@@ -16,26 +16,26 @@ class CharacterResponse(
 
 @JsonClass(generateAdapter = true)
 class CharacterDataContainer(
-    val count: String,
-    val limit: String,
-    val offset: String,
-    @Json(name = "results") val characters: List<Character>,
-    val total: String
+    val count: Int,
+    val limit: Int,
+    val offset: Int,
+    val total: Int,
+    @Json(name = "results") val characters: List<Character>
 )
 
 @JsonClass(generateAdapter = true)
-class Character(
-    val id: String,
+open class Character(
+    val id: Int,
+    val thumbnail: Thumbnail,
+    val name: String,
     val description: String,
     val modified: String,
-    val name: String,
-    val resourceURI: String,
-    val comics: Detail?,
-    val events: Detail?,
-    val series: Detail?,
-    val stories: Detail?,
-    val thumbnail: Thumbnail,
-    val urls: List<Url>
+    val resourceURI: String? = null,
+    val comics: Detail? = null,
+    val events: Detail? = null,
+    val series: Detail? = null,
+    val stories: Detail? = null,
+    val urls: List<Url> = listOf()
 )
 
 @JsonClass(generateAdapter = true)

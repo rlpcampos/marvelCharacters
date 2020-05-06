@@ -1,54 +1,104 @@
 package com.example.marvelcharacters.ui
 
-import android.view.LayoutInflater
+import android.media.Image
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.marvelcharacters.R
+import com.example.marvelcharacters.ext.inflate
+import com.example.marvelcharacters.models.Character
+import com.example.marvelcharacters.models.Thumbnail
+import com.squareup.picasso.Picasso
 
-class CharacterAdapter : RecyclerView.Adapter<CharacterAdapter.Holder>() {
+class CharacterAdapter(private val requestNextPage: () -> Unit) :
+    RecyclerView.Adapter<ViewHolder>() {
+    private val characters = mutableListOf<Character>()
 
-    private var list: MutableList<String> = mutableListOf()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        return Holder(parent.inflate(R.layout.item_character))
+    init {
+        characters.add(CharacterLoading)
     }
 
-    override fun getItemCount(): Int = list.size
-
-    override fun onBindViewHolder(holder: Holder, position: Int) {
-        holder.bind(list[position])
+    private fun hideLoading() {
+        characters.removeAt(characters.size - 1)
+        notifyItemRemoved(characters.size)
     }
 
-    fun addListItem(itemList: String) {
-        list.add(itemList)
-        notifyItemChanged(list.lastIndex)
+    fun updateCharacters(newCharacters: List<Character>, hasNextPage: Boolean) {
+        val initialIndex = characters.size
+
+        if (characters.isNotEmpty()) hideLoading()
+
+        if (newCharacters.isEmpty() && characters.size == 0) {
+            characters.add(CharacterEmpty)
+        } else {
+            characters.addAll(newCharacters)
+
+            if (hasNextPage) characters.add(CharacterLoading)
+        }
+        notifyItemRangeInserted(initialIndex, characters.size - initialIndex)
     }
 
-    fun addList(list: List<String>) {
-        val firstIndex = this.list.lastIndex + 1
-        val listSize = list.size
-        this.list.addAll(list)
-        notifyItemRangeInserted(firstIndex, listSize)
+    override fun getItemViewType(position: Int): Int = characters[position].id
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_LOADING -> LoadingViewHolder(parent.inflate(R.layout.item_loading))
+            VIEW_TYPE_EMPTY -> EmptyViewHolder(parent.inflate(R.layout.item_empyt_list))
+            else -> CharacterHolder(parent.inflate(R.layout.item_character))
+        }
     }
 
-    fun setList(list: List<String>) {
-        this.list = list.toMutableList()
-        notifyDataSetChanged()
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        when (holder) {
+            is LoadingViewHolder -> requestNextPage()
+            is EmptyViewHolder -> holder.bind(requestNextPage)
+            is CharacterHolder -> holder.bind(characters[position])
+            else -> throw IllegalArgumentException("Unknown ViewHolder")
+        }
     }
 
+    override fun getItemCount() = characters.size
 
-    fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
-        return LayoutInflater.from(context)
-            .inflate(layoutRes, this, attachToRoot)
+    companion object {
+        const val VIEW_TYPE_LOADING = 0
+        const val VIEW_TYPE_EMPTY = -1
     }
+}
 
-    inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
-        fun bind(item: String) {
-            itemView.findViewById<TextView>(R.id.rotulo).text = item
+    fun bind(item: Character) {
+        itemView.findViewById<TextView>(R.id.text_view_title).text = item.name
+        itemView.findViewById<TextView>(R.id.text_view_description).text = item.description
+        itemView.findViewById<ImageView>(R.id.image_character).apply {
+            Picasso.get()
+                .load("${item.thumbnail.path}.${item.thumbnail.extension}")
+                .resize(100, 100)
+                .centerInside()
+                .placeholder(R.drawable.ic_progress_animation)
+                .error(R.drawable.ic_cloud_off_black_24dp)
+                .into(this)
         }
     }
 }
+
+class LoadingViewHolder(itemView: View) : ViewHolder(itemView)
+class EmptyViewHolder(itemView: View) : ViewHolder(itemView) {
+    fun bind(retry: () -> Unit) {
+        itemView.findViewById<Button>(R.id.button_retry).setOnClickListener {
+            retry.invoke()
+        }
+    }
+}
+
+object CharacterLoading : Character(
+    CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", ""
+)
+
+object CharacterEmpty : Character(
+    CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", ""
+)
