@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.marvelcharacters.di.networkModule
 import com.example.marvelcharacters.di.repositoryModule
 import com.example.marvelcharacters.di.viewModelModule
+import com.example.marvelcharacters.network.ConnectHandler
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,6 +17,7 @@ class CustomApplication : Application() {
         super.onCreate()
 
         setupKoin()
+        ConnectHandler.registerCallback(this)
     }
 
     private fun setupKoin() {
@@ -28,6 +30,7 @@ class CustomApplication : Application() {
 
     override fun onTerminate() {
         stopKoin()
+        ConnectHandler.unRegisterCallback(this)
         super.onTerminate()
     }
 }

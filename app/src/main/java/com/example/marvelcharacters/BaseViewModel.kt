@@ -29,7 +29,7 @@ abstract class BaseViewModel : ViewModel(), KoinComponent{
                 }
                 block()
             } catch (throwable: Throwable) {
-
+                handleError(throwable)
             } finally {
                 if (enableLoading) {
                     loading.postValue(false)
