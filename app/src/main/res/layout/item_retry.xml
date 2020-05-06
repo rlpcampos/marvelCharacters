@@ -5,14 +5,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/image_character_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_human_outline" />
-
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="match_parent"
         android:id="@+id/button_retry"

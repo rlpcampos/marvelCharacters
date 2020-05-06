@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Marvel Characters</string>
-    <string name="error_message">Ocorreu um erro</string>
+    <string name="error_message_unauthorized">Não autorizado.</string>
+    <string name="error_message">Ocorreu um erro desconhecido</string>
+    <string name="error_message_unknown_host">Ocorreu um erro desconhecido</string>
+    <string name="label_retry">Tentar novamente</string>
 </resources>

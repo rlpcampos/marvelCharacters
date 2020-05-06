@@ -27,6 +27,11 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
         notifyItemRemoved(characters.size)
     }
 
+     fun showRetry() {
+        if (characters.isNotEmpty()) hideLoading()
+         characters.add(CharacterRetry)
+    }
+
     fun updateCharacters(newCharacters: List<Character>, hasNextPage: Boolean) {
         val initialIndex = characters.size
 
@@ -48,6 +53,7 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
         return when (viewType) {
             VIEW_TYPE_LOADING -> LoadingViewHolder(parent.inflate(R.layout.item_loading))
             VIEW_TYPE_EMPTY -> EmptyViewHolder(parent.inflate(R.layout.item_empyt_list))
+            VIEW_TYPE_RETRY -> RetryViewHolder(parent.inflate(R.layout.item_retry))
             else -> CharacterHolder(parent.inflate(R.layout.item_character))
         }
     }
@@ -55,6 +61,7 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is LoadingViewHolder -> requestNextPage()
+            is RetryViewHolder -> holder.bind(requestNextPage)
             is EmptyViewHolder -> holder.bind(requestNextPage)
             is CharacterHolder -> holder.bind(characters[position])
             else -> throw IllegalArgumentException("Unknown ViewHolder")
@@ -64,6 +71,7 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
     override fun getItemCount() = characters.size
 
     companion object {
+        const val VIEW_TYPE_RETRY = 1
         const val VIEW_TYPE_LOADING = 0
         const val VIEW_TYPE_EMPTY = -1
     }
@@ -94,6 +102,13 @@ class EmptyViewHolder(itemView: View) : ViewHolder(itemView) {
         }
     }
 }
+class RetryViewHolder(itemView: View) : ViewHolder(itemView) {
+    fun bind(retry: () -> Unit) {
+        itemView.findViewById<Button>(R.id.button_retry).setOnClickListener {
+            retry.invoke()
+        }
+    }
+}
 
 object CharacterLoading : Character(
     CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", ""
@@ -101,4 +116,8 @@ object CharacterLoading : Character(
 
 object CharacterEmpty : Character(
     CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", ""
+)
+
+object CharacterRetry : Character(
+    CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", ""
 )
