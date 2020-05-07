@@ -10,6 +10,9 @@ interface CharacterDao {
     @Query("SELECT * from character_table ORDER BY name ASC")
     fun getCharacters(): List<CharacterDb>
 
+    @Query("SELECT * from character_table WHERE id = :characterId")
+    fun getCharacterById(characterId: Int): CharacterDb?
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(characterDb: CharacterDb)
 

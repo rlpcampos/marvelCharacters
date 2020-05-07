@@ -1,10 +1,12 @@
 package com.example.marvelcharacters.ui
 
+import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.marvelcharacters.R
@@ -16,7 +18,8 @@ import kotlinx.android.parcel.Parcelize
 
 class CharacterAdapter(
     private val requestNextPage: () -> Unit,
-    val onItemClick: (Character) -> Unit
+    val onItemClick: (Character) -> Unit,
+    val addFavorite: (Character) -> Unit
 ) :
     RecyclerView.Adapter<ViewHolder>() {
     private val characters = mutableListOf<Character>()
@@ -71,7 +74,7 @@ class CharacterAdapter(
             is LoadingViewHolder -> requestNextPage()
             is RetryViewHolder -> holder.bind(requestNextPage)
             is EmptyViewHolder -> holder.bind(requestNextPage)
-            is CharacterHolder -> holder.bind(characters[position], onItemClick)
+            is CharacterHolder -> holder.bind(characters[position], onItemClick, addFavorite)
             else -> throw IllegalArgumentException("Unknown ViewHolder")
         }
     }
@@ -87,9 +90,20 @@ class CharacterAdapter(
 
 class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
-    fun bind(item: Character, onItemClick: (Character) -> Unit) {
+    fun bind(item: Character, onItemClick: (Character) -> Unit, addFavorite: (Character) -> Unit) {
         itemView.findViewById<AppCompatTextView>(R.id.text_view_title).text = item.name
         itemView.findViewById<AppCompatTextView>(R.id.text_view_description).text = item.description
+        itemView.findViewById<AppCompatImageView>(R.id.image_favorite).apply {
+            if (item.isFavorite)
+                DrawableCompat.setTint(this.drawable, context.getColor(R.color.yellow))
+            else
+                DrawableCompat.setTint(this.drawable, context.getColor(R.color.black))
+
+            setOnClickListener {
+                addFavorite.invoke(item)
+                DrawableCompat.setTint(this.drawable, context.getColor(R.color.yellow))
+            }
+        }
         itemView.findViewById<AppCompatImageView>(R.id.image_character).apply {
             Picasso.get()
                 .load(
@@ -127,15 +141,15 @@ class RetryViewHolder(itemView: View) : ViewHolder(itemView) {
 
 @Parcelize
 object CharacterLoading : Character(
-    CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", ""
+    CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", false, ""
 )
 
 @Parcelize
 object CharacterEmpty : Character(
-    CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", ""
+    CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", false, ""
 )
 
 @Parcelize
 object CharacterRetry : Character(
-    CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", ""
+    CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", false, ""
 )

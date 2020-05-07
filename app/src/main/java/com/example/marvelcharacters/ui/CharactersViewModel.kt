@@ -32,12 +32,22 @@ class CharactersViewModel(private val repository: CharacterRepository) : BaseVie
         if (loading.value == true || (firstRequest && page != 1)) return
         launchData {
             repository.fetchCharactersList(page, filter).also { data ->
-                characterList.postValue(data.dataContainer.characters)
+                characterList.postValue(data.dataContainer.characters.map {
+                    it.apply {
+                        isFavorite = repository.getFavoriteById(it.id) != null
+                    }
+                })
                 PageControl(data.dataContainer).also {
                     checkPagination(it)
                     this@CharactersViewModel.hasNextPage = it.hasNextPage
                 }
             }
+        }
+    }
+
+    fun addFavorite(character: Character){
+        launchData {
+            repository.insertFavorites(character)
         }
     }
 

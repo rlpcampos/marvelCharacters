@@ -33,6 +33,7 @@ open class Character(
     val name: String,
     val description: String,
     val modified: String,
+    var isFavorite: Boolean = false,
     val resourceURI: String? = null,
     val comics: Detail? = null,
     val events: Detail? = null,

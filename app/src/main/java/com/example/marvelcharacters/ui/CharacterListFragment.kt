@@ -24,7 +24,8 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     private lateinit var recycleListView: RecyclerView
     private val characterAdapter = CharacterAdapter(
         { viewModel.fetchCharactersList() },
-        { character -> this.onItemClick(character) }
+        { character -> this.onItemClick(character) },
+        { character -> this.addFavorite(character) }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +69,10 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
 
     private fun onItemClick(character: Character) {
         findNavController().navigate(CharacterListFragmentDirections.actionListToDetail(character))
+    }
+
+    private fun addFavorite(character: Character){
+        viewModel.addFavorite(character)
     }
 
     override fun onDestroy() {
