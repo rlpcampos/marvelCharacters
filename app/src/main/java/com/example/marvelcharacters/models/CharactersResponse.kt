@@ -6,7 +6,7 @@ import com.squareup.moshi.JsonClass
 import kotlinx.android.parcel.Parcelize
 
 @JsonClass(generateAdapter = true)
-class CharacterResponse(
+class CharactersResponse(
     val attributionHTML: String,
     val attributionText: String,
     val code: String,

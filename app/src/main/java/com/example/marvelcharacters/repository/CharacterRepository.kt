@@ -1,8 +1,9 @@
 package com.example.marvelcharacters.repository
 
+import com.example.marvelcharacters.database.CharacterDao
 import com.example.marvelcharacters.network.NetworkApi
 
-class CharacterRepository(private val api: NetworkApi) {
+class CharacterRepository(private val api: NetworkApi, private val characterDao: CharacterDao) {
 
     suspend fun fetchCharactersList(page: Int, nameStartsWith: String? = null) =
         api.charactersList(LIMIT_REG, page.selectPage(), nameStartsWith).await()
