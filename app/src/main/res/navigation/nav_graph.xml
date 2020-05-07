@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/listCharacterFragment">
+    app:startDestination="@id/character_list">
 
     <fragment
-        android:id="@+id/listCharacterFragment"
+        android:id="@+id/character_list"
         android:name="com.example.marvelcharacters.ui.CharacterListFragment"
-        android:label="@string/app_name"
+        android:label="@string/menu_list"
         tools:layout="@layout/fragment_character_list">
         <action
             android:id="@+id/action_list_to_detail"
@@ -30,4 +30,17 @@
             app:argType="com.example.marvelcharacters.models.Character" />
 
     </fragment>
-</navigation>
+
+    <fragment
+        android:id="@+id/favorites_list"
+        android:name="com.example.marvelcharacters.ui.CharacterFavoriteListFragment"
+        android:label="@string/menu_favorites"
+        tools:layout="@layout/fragment_character_list">
+        <action
+            android:id="@+id/action_favorite_to_detail"
+            app:destination="@id/detailCharacterFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment></navigation>

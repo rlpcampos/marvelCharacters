@@ -5,4 +5,6 @@
     <string name="error_message_unknown_host">Ocorreu um erro desconhecido</string>
     <string name="label_retry">Tentar novamente</string>
     <string name="label_search">Pesquisar</string>
+    <string name="menu_list">Lista</string>
+    <string name="menu_favorites">Favoritos</string>
 </resources>

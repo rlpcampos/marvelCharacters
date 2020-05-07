@@ -19,7 +19,7 @@ import kotlinx.android.parcel.Parcelize
 class CharacterAdapter(
     private val requestNextPage: () -> Unit,
     val onItemClick: (Character) -> Unit,
-    val addFavorite: (Character) -> Unit
+    val addFavorite: ((Character) -> Unit)? = null
 ) :
     RecyclerView.Adapter<ViewHolder>() {
     private val characters = mutableListOf<Character>()
@@ -90,7 +90,7 @@ class CharacterAdapter(
 
 class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
-    fun bind(item: Character, onItemClick: (Character) -> Unit, addFavorite: (Character) -> Unit) {
+    fun bind(item: Character, onItemClick: (Character) -> Unit, addFavorite: ((Character) -> Unit)?) {
         itemView.findViewById<AppCompatTextView>(R.id.text_view_title).text = item.name
         itemView.findViewById<AppCompatTextView>(R.id.text_view_description).text = item.description
         itemView.findViewById<AppCompatImageView>(R.id.image_favorite).apply {
@@ -100,7 +100,7 @@ class CharacterHolder(itemView: View) : ViewHolder(itemView) {
                 DrawableCompat.setTint(this.drawable, context.getColor(R.color.black))
 
             setOnClickListener {
-                addFavorite.invoke(item)
+                addFavorite?.invoke(item)
                 DrawableCompat.setTint(this.drawable, context.getColor(R.color.yellow))
             }
         }

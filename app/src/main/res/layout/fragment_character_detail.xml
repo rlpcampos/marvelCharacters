@@ -7,13 +7,24 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_view_title"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/image_favorite"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_favorite"
+        app:layout_constraintBottom_toBottomOf="@id/image_favorite"
         tools:text="Character" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/image_favorite"
+        android:layout_width="48dp"
+        android:layout_margin="16dp"
+        android:layout_height="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_star_24dp" />
+
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/image_character"
@@ -22,7 +33,7 @@
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_view_title" />
+        app:layout_constraintTop_toBottomOf="@id/image_favorite" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/text_view_description"
