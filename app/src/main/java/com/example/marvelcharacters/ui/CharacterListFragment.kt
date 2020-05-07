@@ -1,8 +1,12 @@
 package com.example.marvelcharacters.ui
 
+import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.view.View
+import android.view.*
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -22,6 +26,11 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
         { viewModel.fetchCharactersList() },
         { character -> this.onItemClick(character) }
     )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,5 +73,34 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     override fun onDestroy() {
         super.onDestroy()
         recycleListView.adapter = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search, menu)
+
+        menu.findItem(R.id.action_search).actionView.run {
+            this as SearchView
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.filterByName(query)
+                    characterAdapter.clearData()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+            setOnCloseListener {
+                viewModel.clearFilter()
+                characterAdapter.clearData()
+                activity?.invalidateOptionsMenu()
+                (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                    .hideSoftInputFromWindow(windowToken, 0)
+                return@setOnCloseListener true
+            }
+        }
+        super.onCreateOptionsMenu(menu, inflater)
     }
 }

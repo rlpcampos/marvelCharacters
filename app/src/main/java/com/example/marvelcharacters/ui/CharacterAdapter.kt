@@ -34,6 +34,10 @@ class CharacterAdapter(
         if (characters.isNotEmpty()) hideLoading()
         characters.add(CharacterRetry)
     }
+    fun clearData() {
+        characters.clear()
+        notifyDataSetChanged()
+    }
 
     fun updateCharacters(newCharacters: List<Character>, hasNextPage: Boolean) {
         val initialIndex = characters.size

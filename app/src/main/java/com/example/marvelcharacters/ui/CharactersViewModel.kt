@@ -9,14 +9,29 @@ import com.example.marvelcharacters.repository.CharacterRepository
 class CharactersViewModel(private val repository: CharacterRepository) : BaseViewModel() {
 
     private var page = 1
+    private var filter: String? = null
 
     val characterList = MutableLiveData<List<Character>>()
     var hasNextPage = true
 
+    fun filterByName(filter: String?) {
+        this.filter = filter
+        this.page = 1
+        characterList.value = listOf()
+        fetchCharactersList()
+    }
+
+    fun clearFilter() {
+        this.filter = null
+        this.page = 1
+        characterList.value = listOf()
+        fetchCharactersList()
+    }
+
     fun fetchCharactersList(firstRequest: Boolean = false) {
         if (loading.value == true || (firstRequest && page != 1)) return
         launchData {
-            repository.fetchCharactersList(page, null).also { data ->
+            repository.fetchCharactersList(page, filter).also { data ->
                 characterList.postValue(data.dataContainer.characters)
                 PageControl(data.dataContainer).also {
                     checkPagination(it)

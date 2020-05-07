@@ -23,19 +23,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
 
         observableData()
+        setSupportActionBar(toolbar)
 
         toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.listCharacterFragment -> {
-                    toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
+        supportActionBar?.apply {
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                when (destination.id) {
+                    R.id.listCharacterFragment -> {
+                        setHomeAsUpIndicator(R.drawable.ic_close_black_24dp)
+                    }
+                    else -> {
+                        setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp)
+                    }
                 }
-                else -> {
-                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-                }
+                setDisplayHomeAsUpEnabled(true)
             }
         }
     }
