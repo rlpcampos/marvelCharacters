@@ -1,61 +1,64 @@
 package com.example.marvelcharacters.ui
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
 import com.example.marvelcharacters.R
 import com.example.marvelcharacters.ext.setVisibility
 import com.example.marvelcharacters.network.ConnectHandler
-import com.google.android.material.snackbar.Snackbar
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
-    private val viewModel: CharactersViewModel by viewModel()
-
-    private val recycleListView by lazy { findViewById<RecyclerView>(R.id.recycler_view) }
-    private val characterAdapter = CharacterAdapter { viewModel.fetchCharactersList() }
     private val internetAlert by lazy { findViewById<ViewGroup>(R.id.internet_alert) }
-    private val rootView by lazy { findViewById<ViewGroup>(R.id.root) }
+    private val navController by lazy { findNavController(R.id.nav_host_fragment) }
+    private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
+    private val appBarConfiguration = AppBarConfiguration(setOf())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.fetchCharactersList()
-        recycleListView.apply {
-            layoutManager =
-                GridLayoutManager(this@MainActivity, 1, GridLayoutManager.VERTICAL, false)
-            adapter = characterAdapter
-        }
         observableData()
+
+        toolbar.setNavigationOnClickListener {
+            onBackPressed()
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.listCharacterFragment -> {
+                    toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
+                }
+                else -> {
+                    toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
+                }
+            }
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return when (navController.currentDestination?.id) {
+            R.id.listCharacterFragment -> {
+                finish()
+                true
+            }
+            else -> {
+                navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        onSupportNavigateUp()
     }
 
     private fun observableData() {
-
-        viewModel.characterList.observe(this, Observer {
-            characterAdapter.updateCharacters(it, viewModel.hasNextPage)
-        })
-
-        viewModel.error.observe(this, Observer {
-            characterAdapter.showRetry()
-            Snackbar.make(rootView, it, Snackbar.LENGTH_LONG)
-                .setTextColor(Color.YELLOW)
-                .setActionTextColor(Color.GREEN)
-                .setBackgroundTint(Color.BLUE)
-                .setAction(R.string.label_retry){ viewModel.fetchCharactersList() }
-                .show()
-        })
         ConnectHandler.connectivityLiveData.observe(this, Observer {
             internetAlert.setVisibility(!it)
         })
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        recycleListView.adapter = null
     }
 }

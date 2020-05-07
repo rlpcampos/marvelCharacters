@@ -13,8 +13,8 @@ class CharactersViewModel(private val repository: CharacterRepository) : BaseVie
     val characterList = MutableLiveData<List<Character>>()
     var hasNextPage = true
 
-    fun fetchCharactersList() {
-        if (loading.value == true) return
+    fun fetchCharactersList(firstRequest: Boolean = false) {
+        if (loading.value == true || (firstRequest && page != 1)) return
         launchData {
             repository.fetchCharactersList(page, null).also { data ->
                 characterList.postValue(data.dataContainer.characters)

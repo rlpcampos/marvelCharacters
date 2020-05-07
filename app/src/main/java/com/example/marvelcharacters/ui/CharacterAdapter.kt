@@ -1,6 +1,5 @@
 package com.example.marvelcharacters.ui
 
-import android.media.Image
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -13,8 +12,12 @@ import com.example.marvelcharacters.ext.inflate
 import com.example.marvelcharacters.models.Character
 import com.example.marvelcharacters.models.Thumbnail
 import com.squareup.picasso.Picasso
+import kotlinx.android.parcel.Parcelize
 
-class CharacterAdapter(private val requestNextPage: () -> Unit) :
+class CharacterAdapter(
+    private val requestNextPage: () -> Unit,
+    val onItemClick: (Character) -> Unit
+) :
     RecyclerView.Adapter<ViewHolder>() {
     private val characters = mutableListOf<Character>()
 
@@ -27,9 +30,9 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
         notifyItemRemoved(characters.size)
     }
 
-     fun showRetry() {
+    fun showRetry() {
         if (characters.isNotEmpty()) hideLoading()
-         characters.add(CharacterRetry)
+        characters.add(CharacterRetry)
     }
 
     fun updateCharacters(newCharacters: List<Character>, hasNextPage: Boolean) {
@@ -63,7 +66,7 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
             is LoadingViewHolder -> requestNextPage()
             is RetryViewHolder -> holder.bind(requestNextPage)
             is EmptyViewHolder -> holder.bind(requestNextPage)
-            is CharacterHolder -> holder.bind(characters[position])
+            is CharacterHolder -> holder.bind(characters[position], onItemClick)
             else -> throw IllegalArgumentException("Unknown ViewHolder")
         }
     }
@@ -79,18 +82,24 @@ class CharacterAdapter(private val requestNextPage: () -> Unit) :
 
 class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
-    fun bind(item: Character) {
+    fun bind(item: Character, onItemClick: (Character) -> Unit) {
         itemView.findViewById<TextView>(R.id.text_view_title).text = item.name
         itemView.findViewById<TextView>(R.id.text_view_description).text = item.description
         itemView.findViewById<ImageView>(R.id.image_character).apply {
             Picasso.get()
-                .load("${item.thumbnail.path}.${item.thumbnail.extension}")
+                .load(
+                    "${item.thumbnail.path.replace(
+                        "http://",
+                        "https://"
+                    )}.${item.thumbnail.extension}"
+                )
                 .resize(100, 100)
                 .centerInside()
                 .placeholder(R.drawable.ic_progress_animation)
                 .error(R.drawable.ic_cloud_off_black_24dp)
                 .into(this)
         }
+        itemView.setOnClickListener { onItemClick.invoke(item) }
     }
 }
 
@@ -102,6 +111,7 @@ class EmptyViewHolder(itemView: View) : ViewHolder(itemView) {
         }
     }
 }
+
 class RetryViewHolder(itemView: View) : ViewHolder(itemView) {
     fun bind(retry: () -> Unit) {
         itemView.findViewById<Button>(R.id.button_retry).setOnClickListener {
@@ -110,14 +120,17 @@ class RetryViewHolder(itemView: View) : ViewHolder(itemView) {
     }
 }
 
+@Parcelize
 object CharacterLoading : Character(
     CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", ""
 )
 
+@Parcelize
 object CharacterEmpty : Character(
     CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", ""
 )
 
+@Parcelize
 object CharacterRetry : Character(
     CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", ""
 )

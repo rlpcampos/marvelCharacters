@@ -1,7 +1,9 @@
 package com.example.marvelcharacters.models
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 @JsonClass(generateAdapter = true)
 class CharacterResponse(
@@ -24,6 +26,7 @@ class CharacterDataContainer(
 )
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 open class Character(
     val id: Int,
     val thumbnail: Thumbnail,
@@ -36,31 +39,35 @@ open class Character(
     val series: Detail? = null,
     val stories: Detail? = null,
     val urls: List<Url> = listOf()
-)
+) : Parcelable
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 class Url(
     val type: String,
     val url: String
-)
+) : Parcelable
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 class Thumbnail(
     val extension: String,
     val path: String
-)
+) : Parcelable
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 class Detail(
     val available: String,
     val collectionURI: String,
     val items: List<Item>,
     val returned: String
-)
+) : Parcelable
 
 @JsonClass(generateAdapter = true)
+@Parcelize
 class Item(
     val name: String,
     val resourceURI: String?,
     val type: String?
-)
+) : Parcelable
