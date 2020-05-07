@@ -3,8 +3,8 @@ package com.example.marvelcharacters.ui
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.marvelcharacters.R
@@ -34,6 +34,7 @@ class CharacterAdapter(
         if (characters.isNotEmpty()) hideLoading()
         characters.add(CharacterRetry)
     }
+
     fun clearData() {
         characters.clear()
         notifyDataSetChanged()
@@ -87,9 +88,9 @@ class CharacterAdapter(
 class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
     fun bind(item: Character, onItemClick: (Character) -> Unit) {
-        itemView.findViewById<TextView>(R.id.text_view_title).text = item.name
-        itemView.findViewById<TextView>(R.id.text_view_description).text = item.description
-        itemView.findViewById<ImageView>(R.id.image_character).apply {
+        itemView.findViewById<AppCompatTextView>(R.id.text_view_title).text = item.name
+        itemView.findViewById<AppCompatTextView>(R.id.text_view_description).text = item.description
+        itemView.findViewById<AppCompatImageView>(R.id.image_character).apply {
             Picasso.get()
                 .load(
                     "${item.thumbnail.path.replace(
