@@ -36,7 +36,7 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycleListView = view.findViewById<RecyclerView>(R.id.recycler_view)
-        viewModel.fetchCharactersList(true)
+        viewModel.fetchCharactersList(characterAdapter.itemCount > 0)
         observableData()
         setupView()
     }
@@ -51,7 +51,8 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
 
     private fun observableData() {
         viewModel.characterList.observe(viewLifecycleOwner, Observer {
-            characterAdapter.updateCharacters(it, viewModel.hasNextPage)
+            if (viewModel.showDetail) viewModel.showDetail = false
+            else characterAdapter.updateCharacters(it, viewModel.hasNextPage)
         })
 
         viewModel.error.observe(viewLifecycleOwner, Observer { msg ->
@@ -68,6 +69,7 @@ class CharacterListFragment : Fragment(R.layout.fragment_character_list) {
     }
 
     private fun onItemClick(character: Character) {
+        viewModel.showDetail = true
         findNavController().navigate(CharacterListFragmentDirections.actionListToDetail(character))
     }
 

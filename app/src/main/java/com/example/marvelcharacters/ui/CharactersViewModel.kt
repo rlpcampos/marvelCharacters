@@ -13,6 +13,7 @@ class CharactersViewModel(private val repository: CharacterRepository) : BaseVie
 
     val characterList = MutableLiveData<List<Character>>()
     var hasNextPage = true
+    var showDetail = false
 
     fun filterByName(filter: String?) {
         this.filter = filter
@@ -45,6 +46,14 @@ class CharactersViewModel(private val repository: CharacterRepository) : BaseVie
         }
     }
 
+    fun fetchFavoriteCharactersList(hasData: Boolean ) {
+        if (loading.value == true || hasData ) return
+        launchData {
+            repository.getFavorites().also {
+                characterList.postValue(it)
+            }
+        }
+    }
     fun addFavorite(character: Character){
         launchData {
             repository.insertFavorites(character)

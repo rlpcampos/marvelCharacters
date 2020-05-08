@@ -19,14 +19,14 @@ class CharacterFavoriteListFragment : Fragment(R.layout.fragment_character_list)
 
     private lateinit var recycleListView: RecyclerView
     private val characterAdapter = CharacterAdapter(
-        { viewModel.fetchCharactersList() },
+        { viewModel.fetchFavoriteCharactersList(false) },
         { character -> this.onItemClick(character) }
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recycleListView = view.findViewById<RecyclerView>(R.id.recycler_view)
-        viewModel.fetchCharactersList(true)
+        viewModel.fetchFavoriteCharactersList(characterAdapter.itemCount > 0)
         observableData()
         setupView()
     }
@@ -41,7 +41,8 @@ class CharacterFavoriteListFragment : Fragment(R.layout.fragment_character_list)
 
     private fun observableData() {
         viewModel.characterList.observe(viewLifecycleOwner, Observer {
-            characterAdapter.updateCharacters(it, viewModel.hasNextPage)
+            if (viewModel.showDetail) viewModel.showDetail = false
+            else characterAdapter.updateCharacters(it, false)
         })
 
         viewModel.error.observe(viewLifecycleOwner, Observer { msg ->
@@ -58,7 +59,12 @@ class CharacterFavoriteListFragment : Fragment(R.layout.fragment_character_list)
     }
 
     private fun onItemClick(character: Character) {
-        findNavController().navigate(CharacterListFragmentDirections.actionListToDetail(character))
+        viewModel.showDetail = true
+        findNavController().navigate(
+            CharacterFavoriteListFragmentDirections.actionFavoriteToDetail(
+                character
+            )
+        )
     }
 
     override fun onDestroy() {

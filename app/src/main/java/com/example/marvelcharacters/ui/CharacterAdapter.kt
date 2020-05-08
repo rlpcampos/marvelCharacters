@@ -1,6 +1,5 @@
 package com.example.marvelcharacters.ui
 
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -90,7 +89,11 @@ class CharacterAdapter(
 
 class CharacterHolder(itemView: View) : ViewHolder(itemView) {
 
-    fun bind(item: Character, onItemClick: (Character) -> Unit, addFavorite: ((Character) -> Unit)?) {
+    fun bind(
+        item: Character,
+        onItemClick: (Character) -> Unit,
+        addFavorite: ((Character) -> Unit)?
+    ) {
         itemView.findViewById<AppCompatTextView>(R.id.text_view_title).text = item.name
         itemView.findViewById<AppCompatTextView>(R.id.text_view_description).text = item.description
         itemView.findViewById<AppCompatImageView>(R.id.image_favorite).apply {
