@@ -5,28 +5,29 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.0"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
     }
 
-    def props = new Properties()
-    file("credentials.properties").withInputStream {props.load(it)}
-    ext.credentials_publickey  = props.getProperty("credentials.publickey")
-    ext.credentials_privatekey  = props.getProperty("credentials.privatekey")
+    if (System.getenv("CI_ENV_VAR") == null) {
+        def props = new Properties()
+        file("credentials.properties").withInputStream { props.load(it) }
+        ext.credentials_publickey = props.getProperty("credentials.publickey")
+        ext.credentials_privatekey = props.getProperty("credentials.privatekey")
+    } else {
+        ext.credentials_publickey = ""
+        ext.credentials_privatekey = ""
+    }
 }
 
 allprojects {
     repositories {
         google()
         jcenter()
-        
     }
 }
 
