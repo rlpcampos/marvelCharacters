@@ -24,7 +24,7 @@ class CharacterAdapter(
     private val characters = mutableListOf<Character>()
 
     init {
-        characters.add(CharacterLoading)
+        characters.add(Characters.CharacterLoading)
     }
 
     private fun hideLoading() {
@@ -34,7 +34,7 @@ class CharacterAdapter(
 
     fun showRetry() {
         if (characters.isNotEmpty()) hideLoading()
-        characters.add(CharacterRetry)
+        characters.add(Characters.CharacterRetry)
     }
 
     fun clearData() {
@@ -48,11 +48,11 @@ class CharacterAdapter(
         if (characters.isNotEmpty()) hideLoading()
 
         if (newCharacters.isEmpty() && characters.size == 0) {
-            characters.add(CharacterEmpty)
+            characters.add(Characters.CharacterEmpty)
         } else {
             characters.addAll(newCharacters)
 
-            if (hasNextPage) characters.add(CharacterLoading)
+            if (hasNextPage) characters.add(Characters.CharacterLoading)
         }
         notifyItemRangeInserted(initialIndex, characters.size - initialIndex)
     }
@@ -142,17 +142,19 @@ class RetryViewHolder(itemView: View) : ViewHolder(itemView) {
     }
 }
 
-@Parcelize
-object CharacterLoading : Character(
-    CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", false, ""
-)
+sealed class Characters {
+    @Parcelize
+    object CharacterLoading : Character(
+        CharacterAdapter.VIEW_TYPE_LOADING, Thumbnail("", ""), "", "", "", false, ""
+    )
 
-@Parcelize
-object CharacterEmpty : Character(
-    CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", false, ""
-)
+    @Parcelize
+    object CharacterEmpty : Character(
+        CharacterAdapter.VIEW_TYPE_EMPTY, Thumbnail("", ""), "", "", "", false, ""
+    )
 
-@Parcelize
-object CharacterRetry : Character(
-    CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", false, ""
-)
+    @Parcelize
+    object CharacterRetry : Character(
+        CharacterAdapter.VIEW_TYPE_RETRY, Thumbnail("", ""), "", "", "", false, ""
+    )
+}
